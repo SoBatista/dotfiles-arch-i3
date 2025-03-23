@@ -28,8 +28,8 @@ done
 # Ask for sudo once and keep it alive
 printf "🔐 Requesting sudo access..."
 sudo -v
-# Keep-alive: refresh sudo timestamp while script runs
-( while true; do sudo -n true; sleep 60; done ) 2>/dev/null &
+# Keep-alive: refresh sudo timestamp while script runs (every 30 seconds)
+( while true; do sudo -n true; sleep 30; done ) 2>/dev/null &
 SUDO_PID=$!
 trap 'kill $SUDO_PID' EXIT
 
@@ -135,7 +135,7 @@ setup_i3blocks_contrib() {
 
 set_zsh_default() {
   print_progress 95 "Setting Zsh as default shell"
-  chsh -s "$(which zsh)"
+  run chsh -s "$(which zsh)"
   if [ "$SHELL" = "/bin/zsh" ]; then
     source "$HOME/.zshrc"
   else
