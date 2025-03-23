@@ -2,6 +2,9 @@
 
 set -e
 
+SCRIPT_VERSION="1.0.0"
+LOG_FILE="$HOME/setup.log"
+
 # Flags
 INSTALL_CORE=true
 INSTALL_HACKING=true
@@ -21,6 +24,20 @@ for arg in "$@"; do
     --no-zsh) SET_ZSH=false ;;
     --no-reboot) PROMPT_REBOOT=false ;;
     --debug) DEBUG=true ;;
+    --help)
+      echo "\n📖 Arch Hacking Setup Script v$SCRIPT_VERSION"
+      echo "Usage: ./install_hacking_env.sh [options]"
+      echo "\nOptions:"
+      echo "  --no-core       Skip core utilities installation"
+      echo "  --no-hacking    Skip hacking tools installation"
+      echo "  --no-dotfiles   Do not clone or apply dotfiles"
+      echo "  --no-i3blocks   Skip i3blocks-contrib setup"
+      echo "  --no-zsh        Skip setting ZSH as default shell"
+      echo "  --no-reboot     Don’t prompt for reboot at the end"
+      echo "  --debug         Show full command output"
+      echo "  --help          Show this help message"
+      exit 0
+      ;;
     *) echo "⚠️ Unknown option: $arg"; exit 1 ;;
   esac
 done
@@ -28,16 +45,20 @@ done
 # Ask for sudo once and keep it alive
 printf "🔐 Requesting sudo access...\n"
 sudo -v
-# Keep-alive: refresh sudo timestamp while script runs (every 30 seconds)
 ( while true; do sudo -n true; sleep 30; done ) &
 SUDO_PID=$!
 trap 'kill $SUDO_PID' EXIT
 
+# Logging helper
+log() {
+  echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" | tee -a "$LOG_FILE"
+}
+
 run() {
   if $DEBUG; then
-    "$@"
+    "$@" 2>&1 | tee -a "$LOG_FILE"
   else
-    "$@" >/dev/null 2>&1
+    "$@" >> "$LOG_FILE" 2>&1
   fi
 }
 
@@ -51,9 +72,11 @@ print_progress() {
 
 install_core_packages() {
   print_progress 10 "Updating system"
+  log "Updating system packages"
   run sudo -v && sudo pacman -Syu --noconfirm
 
   print_progress 20 "Installing core utilities"
+  log "Installing core packages"
   run sudo -v && sudo pacman -S --noconfirm \
     virtualbox-guest-utils \
     terminator \
@@ -74,15 +97,18 @@ install_core_packages() {
     pacman-contrib
 
   print_progress 30 "Enabling VirtualBox guest services"
+  log "Enabling VirtualBox guest services"
   run sudo -v && sudo systemctl enable vboxservice
   run sudo -v && sudo systemctl start vboxservice
 }
 
 install_hacking_tools() {
   print_progress 40 "Installing hacking tools (pacman)"
+  log "Installing nmap and john"
   run sudo -v && sudo pacman -S --noconfirm nmap john
 
   print_progress 50 "Installing yay"
+  log "Installing yay AUR helper"
   run sudo -v && sudo pacman -S --needed --noconfirm git base-devel
   cd "$HOME"
   if [ -d "$HOME/yay" ]; then
@@ -96,6 +122,7 @@ install_hacking_tools() {
   fi
 
   print_progress 60 "Installing hacking tools (AUR)"
+  log "Installing gobuster, ffuf, burpsuite, zsh-autosuggestions"
   run yay -S --noconfirm \
     zsh-autosuggestions \
     gobuster \
@@ -105,6 +132,7 @@ install_hacking_tools() {
 
 setup_dotfiles() {
   print_progress 70 "Cloning dotfiles"
+  log "Cloning and applying dotfiles"
   if [ -d "$HOME/dotfiles-arch-i3" ]; then
     cd "$HOME/dotfiles-arch-i3" && run git pull
   else
@@ -125,6 +153,7 @@ setup_dotfiles() {
 
 setup_i3blocks_contrib() {
   print_progress 90 "Cloning i3blocks-contrib"
+  log "Setting up i3blocks-contrib"
   mkdir -p "$HOME/.config/i3blocks/scripts"
   cd "$HOME/.config/i3blocks/scripts"
   if [ -d "$HOME/.config/i3blocks/scripts/i3blocks-contrib" ]; then
@@ -136,14 +165,20 @@ setup_i3blocks_contrib() {
 
 set_zsh_default() {
   print_progress 95 "Setting Zsh as default shell"
+  log "Setting ZSH as default shell"
   run sudo -v && chsh -s "$(which zsh)"
-  if [ "$SHELL" != "$(which zsh)" ]; then
-    echo "\nℹ️ Zsh will be applied after you log out and back in."
+  if [ "$(basename "$SHELL")" != "zsh" ]; then
+    echo -e "\nℹ️ Zsh will be applied after you log out and back in."
   fi
 }
 
 main() {
   echo -e "\n🚀 Starting full system setup...\n"
+  echo "📋 Logging everything to: $LOG_FILE"
+  echo "----------------------" > "$LOG_FILE"
+  echo "Setup Log - $(date)" >> "$LOG_FILE"
+  echo "----------------------" >> "$LOG_FILE"
+
   $INSTALL_CORE && install_core_packages
   $INSTALL_HACKING && install_hacking_tools
   $INSTALL_DOTFILES && setup_dotfiles

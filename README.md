@@ -18,10 +18,10 @@ It’s based on my YouTube tutorial series and configures everything from termin
 
 ### 🎯 Hacking Tools
 - `nmap` – Network scanner
-- `john` – Password cracker
+- `john` – Powerful password cracker
 - `burpsuite` – Web proxy/interceptor
-- `gobuster` – Directory scanner
-- `ffuf` – Fuzzing tool
+- `gobuster` – Directory and file brute-forcing tool
+- `ffuf` – Fast web fuzzer written in Go
 - Custom wordlists folder (`/usr/share/wordlists`)
 
 ### 🧱 i3 Setup
@@ -43,43 +43,69 @@ It’s based on my YouTube tutorial series and configures everything from termin
 
 1. Clone this repository:
 
-   git clone https://github.com/yourusername/arch-hacking-setup.git
-   cd arch-hacking-setup
+    ```bash
+    git clone https://github.com/SoBatista/dotfiles-arch-i3.git
+    cd arch-hacking-setup
+    ```
 
 2. Make the script executable:
 
+    ```bash
     chmod +x install_hacking_env.sh
+    ```
 
-3. Run the script
+3. Run the script:
 
+    ```bash
     ./install_hacking_env.sh
+    ```
 
-⚠️ Important: Run this on a fresh Arch Linux install with i3 window manager and internet access.
+📂 All logs will be saved to `~/setup.log`.
 
 ---
 
-## 🔧 Manual Steps (After the Script)
-This script installs everything, but a few configurations require manual edits to match your preferences.
+## ⚙️ Flags & Customization
 
-### ~/.config/i3/config
+You can customize which parts of the script to run using flags:
 
-    # Change terminal
-    bindsym $mod+Return exec terminator
+| Flag            | Description                            |
+|-----------------|----------------------------------------|
+| `--no-core`     | Skip core tools installation           |
+| `--no-hacking`  | Skip hacking tools installation        |
+| `--no-dotfiles` | Skip downloading & applying dotfiles   |
+| `--no-i3blocks` | Skip i3blocks-contrib setup            |
+| `--no-zsh`      | Skip setting Zsh as default shell      |
+| `--no-reboot`   | Skip reboot prompt after installation  |
+| `--debug`       | Show detailed command outputs          |
+| `--help`        | Show help and exit                     |
 
-    # Replace i3status with i3blocks
-    status_command SCRIPT_DIR=~/.config/i3blocks/scripts/i3blocks-contrib i3blocks
+---
 
-    # Set wallpaper
-    exec --no-startup-id feh --bg-scale /path/to/image
+## 🔧 Optional Manual Steps (Already Preconfigured with Dotfiles)
 
-    # Assign applications to workspaces
-    for_window [class="firefox"] move to workspace $ws2
+If you're using your own setup or want to tweak manually:
 
-    # Lock screen shortcut
-    bindsym $mod+z exec i3lock
+### `~/.config/i3/config`
 
-    # Launch rofi with icons
-    bindsym $mod+d exec rofi -show run -icon-theme "Papirus" -show-icons
+```bash
+# Change terminal
+bindsym $mod+Return exec terminator
+
+# Replace i3status with i3blocks
+status_command SCRIPT_DIR=~/.config/i3blocks/scripts/i3blocks-contrib i3blocks
+
+# Set wallpaper
+exec --no-startup-id feh --bg-scale /path/to/image
+
+# Assign applications to workspaces
+for_window [class="firefox"] move to workspace $ws2
+
+# Lock screen shortcut
+bindsym $mod+z exec i3lock
+
+# Launch rofi with icons
+bindsym $mod+d exec rofi -show run -icon-theme "Papirus" -show-icons
+```
 
 ### ~/.zshrc (snippet added by the script)
 
