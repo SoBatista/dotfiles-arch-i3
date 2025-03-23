@@ -99,4 +99,10 @@ source ~/.zshrc
 # -----------------------
 
 echo "✅ Setup complete!"
-echo "📌 Reboot your system or log out/in to apply all changes."
+echo
+read -p "🎉 Installation complete! Do you want to reboot now? (y/n): " answer
+case "$answer" in
+    [Yy]* ) echo "🔄 Rebooting..."; reboot;;
+    [Nn]* ) echo "✅ Done! You can reboot later to apply all changes.";;
+    * ) echo "❓ Invalid option. Not rebooting. You can reboot manually later.";;
+esac
