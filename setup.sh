@@ -26,10 +26,10 @@ for arg in "$@"; do
 done
 
 # Ask for sudo once and keep it alive
-printf "🔐 Requesting sudo access..."
+printf "🔐 Requesting sudo access...\n"
 sudo -v
 # Keep-alive: refresh sudo timestamp while script runs (every 30 seconds)
-( while true; do sudo -n true; sleep 30; done ) 2>/dev/null &
+( while true; do sudo -n true; sleep 30; done ) &
 SUDO_PID=$!
 trap 'kill $SUDO_PID' EXIT
 
@@ -44,16 +44,17 @@ run() {
 print_progress() {
   local progress=$1
   local label=$2
-  printf "\r[%-50s] %3d%% %s" $(printf "#%.0s" $(seq 1 $((progress/2)))) $progress "$label"
-  sleep 0.5
+  local bar=$(printf "#%.0s" $(seq 1 $((progress / 2))))
+  local spaces=$(printf " %.0s" $(seq 1 $((50 - progress / 2))))
+  printf "\r[%s%s] %3d%% %s" "$bar" "$spaces" "$progress" "$label"
 }
 
 install_core_packages() {
   print_progress 10 "Updating system"
-  run sudo pacman -Syu --noconfirm
+  run sudo -v && sudo pacman -Syu --noconfirm
 
   print_progress 20 "Installing core utilities"
-  run sudo pacman -S --noconfirm \
+  run sudo -v && sudo pacman -S --noconfirm \
     virtualbox-guest-utils \
     terminator \
     zsh \
@@ -73,16 +74,16 @@ install_core_packages() {
     pacman-contrib
 
   print_progress 30 "Enabling VirtualBox guest services"
-  run sudo systemctl enable vboxservice
-  run sudo systemctl start vboxservice
+  run sudo -v && sudo systemctl enable vboxservice
+  run sudo -v && sudo systemctl start vboxservice
 }
 
 install_hacking_tools() {
   print_progress 40 "Installing hacking tools (pacman)"
-  run sudo pacman -S --noconfirm nmap john
+  run sudo -v && sudo pacman -S --noconfirm nmap john
 
   print_progress 50 "Installing yay"
-  run sudo pacman -S --needed --noconfirm git base-devel
+  run sudo -v && sudo pacman -S --needed --noconfirm git base-devel
   cd "$HOME"
   if [ -d "$HOME/yay" ]; then
     cd yay && run git pull && cd ..
@@ -135,15 +136,14 @@ setup_i3blocks_contrib() {
 
 set_zsh_default() {
   print_progress 95 "Setting Zsh as default shell"
-  run chsh -s "$(which zsh)"
-  if [ "$SHELL" = "/bin/zsh" ]; then
-    source "$HOME/.zshrc"
-  else
-    echo "\nℹ️ You're using Bash. Your Zsh config will apply after reboot or switching shell."
+  run sudo -v && chsh -s "$(which zsh)"
+  if [ "$SHELL" != "$(which zsh)" ]; then
+    echo "\nℹ️ Zsh will be applied after you log out and back in."
   fi
 }
 
 main() {
+  echo -e "\n🚀 Starting full system setup...\n"
   $INSTALL_CORE && install_core_packages
   $INSTALL_HACKING && install_hacking_tools
   $INSTALL_DOTFILES && setup_dotfiles
@@ -151,11 +151,11 @@ main() {
   $SET_ZSH && set_zsh_default
 
   print_progress 100 "✅ Setup complete!"
-  echo
+  echo -e "\n\n🎉 All done!"
 
   if $PROMPT_REBOOT; then
     echo
-    read -p "🎉 Installation complete! Do you want to reboot now? (y/n): " answer
+    read -p "🔁 Do you want to reboot now? (y/n): " answer
     case "$answer" in
         [Yy]* ) echo "🔄 Rebooting..."; reboot ;;
         [Nn]* ) echo "✅ Done! You can reboot later to apply all changes." ;;
