@@ -25,9 +25,9 @@ for arg in "$@"; do
     --no-reboot) PROMPT_REBOOT=false ;;
     --debug) DEBUG=true ;;
     --help)
-      echo "\n📖 Arch Hacking Setup Script v$SCRIPT_VERSION"
+      echo "📖 Arch Hacking Setup Script v$SCRIPT_VERSION"
       echo "Usage: ./install_hacking_env.sh [options]"
-      echo "\nOptions:"
+      echo "Options:"
       echo "  --no-core       Skip core utilities installation"
       echo "  --no-hacking    Skip hacking tools installation"
       echo "  --no-dotfiles   Do not clone or apply dotfiles"
