@@ -51,13 +51,13 @@ It’s based on my YouTube tutorial series and configures everything from termin
 2. Make the script executable:
 
     ```bash
-    chmod +x install_hacking_env.sh
+    chmod +x setup.sh
     ```
 
 3. Run the script:
 
     ```bash
-    ./install_hacking_env.sh
+    ./setup.sh
     ```
 
 📂 All logs will be saved to `~/setup.log`.
