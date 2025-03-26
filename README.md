@@ -45,7 +45,7 @@ It’s based on my YouTube tutorial series and configures everything from termin
 
     ```bash
     git clone https://github.com/SoBatista/dotfiles-arch-i3.git
-    cd arch-hacking-setup
+    cd dotfiles-arch-i3
     ```
 
 2. Make the script executable:
