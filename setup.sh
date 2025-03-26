@@ -154,9 +154,9 @@ setup_dotfiles() {
 setup_i3blocks_contrib() {
   print_progress 90 "Cloning i3blocks-contrib"
   log "Setting up i3blocks-contrib"
-  mkdir -p "$HOME/.config/i3blocks/scripts"
-  cd "$HOME/.config/i3blocks/scripts"
-  if [ -d "$HOME/.config/i3blocks/scripts/i3blocks-contrib" ]; then
+  mkdir -p "$HOME/.config/i3blocks"
+  cd "$HOME/.config/i3blocks"
+  if [ -d "$HOME/.config/i3blocks/i3blocks-contrib" ]; then
     cd i3blocks-contrib && run git pull
   else
     run git clone https://github.com/vivien/i3blocks-contrib.git
