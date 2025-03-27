@@ -220,6 +220,7 @@ main() {
   $INSTALL_DOTFILES && setup_dotfiles
   $INSTALL_I3BLOCKS && setup_i3blocks_contrib
   $SET_ZSH && set_zsh_default
+  download_and_install_rofi_themes
 
   print_progress 100 "✅ Setup complete!"
   echo -e "\n\n🎉 All done!"
