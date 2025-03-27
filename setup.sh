@@ -147,6 +147,11 @@ setup_dotfiles() {
   mkdir -p "$HOME/.config/i3blocks"
   cp "$HOME/dotfiles-arch-i3/i3blocks/i3blocks.conf" "$HOME/.config/i3blocks/i3blocks.conf"
 
+   # Move the wallpaper to Downloads
+  print_progress 83 "Setting wallpaper"
+  log "Moving wallpaper to ~/Downloads/"
+  cp -f "$HOME/dotfiles-arch-i3/wallpaper.jpg" "$HOME/Downloads/wallpaper.jpg"
+
   print_progress 85 "Applying zshrc"
   cp "$HOME/dotfiles-arch-i3/zshrc/config" "$HOME/.zshrc"
 }
@@ -170,6 +175,34 @@ set_zsh_default() {
   if [ "$(basename "$SHELL")" != "zsh" ]; then
     echo -e "\nℹ️ Zsh will be applied after you log out and back in."
   fi
+}
+
+download_and_install_rofi_themes() {
+  print_progress 87 "Downloading and installing Rofi themes"
+  log "Downloading and installing Rofi themes"
+
+  # Define the URLs and target directory
+  local themes=(
+    "https://raw.githubusercontent.com/newmanls/rofi-themes-collection/master/themes/rounded-common.rasi"
+    "https://raw.githubusercontent.com/newmanls/rofi-themes-collection/master/themes/rounded-nord-dark.rasi"
+  )
+  local rofi_themes_dir="/usr/share/rofi/themes"
+
+  # Ensure the Rofi themes directory exists
+  sudo mkdir -p "$rofi_themes_dir"
+
+  # Download each theme
+  for theme_url in "${themes[@]}"; do
+    local theme_name=$(basename "$theme_url")
+    sudo wget -q "$theme_url" -O "$rofi_themes_dir/$theme_name"
+  done
+
+  # Replace the existing config.rasi with the one from your repository
+  local config_source="$HOME/dotfiles-arch-i3/rofi/config.rasi"
+  local config_target="$HOME/.config/rofi/config.rasi"
+
+  mkdir -p "$(dirname "$config_target")"
+  cp -f "$config_source" "$config_target"
 }
 
 main() {
