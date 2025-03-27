@@ -147,7 +147,10 @@ setup_dotfiles() {
   mkdir -p "$HOME/.config/i3blocks"
   cp "$HOME/dotfiles-arch-i3/i3blocks/i3blocks.conf" "$HOME/.config/i3blocks/i3blocks.conf"
 
-   # Move the wallpaper to Downloads
+  # Ensure the Downloads directory exists
+mkdir -p "$HOME/Downloads"
+
+  # Move the wallpaper to Downloads
   print_progress 83 "Setting wallpaper"
   log "Moving wallpaper to ~/Downloads/"
   cp -f "$HOME/dotfiles-arch-i3/wallpaper.jpg" "$HOME/Downloads/wallpaper.jpg"
