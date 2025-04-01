@@ -121,9 +121,9 @@ install_hacking_tools() {
   fi
 
   print_progress 55 "Installing GTK theme from AUR"
-  log "Installing arc-gtk-theme-git from AUR"
-  if ! run yay -S --batchinstall arc-gtk-theme-git; then
-    echo "❌ Failed to install arc-gtk-theme-git. Check $LOG_FILE for details."
+  log "Installing arc-gtk-theme from AUR"
+  if ! run yay -S --noconfirm arc-gtk-theme; then
+    echo "❌ Failed to install arc-gtk-theme. Check $LOG_FILE for details."
     exit 1
   fi
 
