@@ -122,14 +122,10 @@ install_hacking_tools() {
 
   print_progress 55 "Installing GTK theme from AUR"
   log "Installing arc-gtk-theme-git from AUR"
-  if ! run yay -S --noconfirm --nocleanmenu --nodiffmenu --removemake --batchinstall arc-gtk-theme-git; then
+  if ! run yay -S --batchinstall arc-gtk-theme-git; then
     echo "❌ Failed to install arc-gtk-theme-git. Check $LOG_FILE for details."
     exit 1
   fi
-
-
-
-
 
   print_progress 60 "Installing hacking tools (AUR)"
   log "Installing gobuster, ffuf, burpsuite, zsh-autosuggestions"
