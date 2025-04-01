@@ -77,7 +77,7 @@ install_core_packages() {
 
   print_progress 20 "Installing core utilities"
   log "Installing core packages"
-  run sudo -v && sudo pacman -S --noconfirm \
+  run sudo -v && sudo pacman -S --needed --noconfirm \
     virtualbox-guest-utils \
     terminator \
     zsh \
@@ -85,7 +85,6 @@ install_core_packages() {
     less \
     pcmanfm \
     lxappearance \
-    arc-gtk-theme \
     feh \
     rofi \
     ttf-font-awesome \
@@ -120,6 +119,11 @@ install_hacking_tools() {
     cd ..
     rm -rf yay
   fi
+
+  print_progress 55 "Installing GTK theme from AUR"
+  log "Installing arc-gtk-theme-git from AUR"
+  run yay -S --noconfirm arc-gtk-theme-git
+
 
   print_progress 60 "Installing hacking tools (AUR)"
   log "Installing gobuster, ffuf, burpsuite, zsh-autosuggestions"
