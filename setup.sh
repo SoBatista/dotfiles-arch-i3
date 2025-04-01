@@ -122,7 +122,8 @@ install_hacking_tools() {
 
   print_progress 55 "Installing GTK theme from AUR"
   log "Installing arc-gtk-theme-git from AUR"
-  run yay -S --noconfirm arc-gtk-theme-git
+  run yay -S --noconfirm --nocleanmenu --nodiffmenu --removemake arc-gtk-theme-git
+
 
 
   print_progress 60 "Installing hacking tools (AUR)"
